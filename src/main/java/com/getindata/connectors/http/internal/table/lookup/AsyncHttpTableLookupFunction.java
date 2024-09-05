@@ -23,11 +23,14 @@ public class AsyncHttpTableLookupFunction extends AsyncLookupFunction {
 
     private static final String PUBLISHING_THREAD_POOL_SIZE = "4";
 
+    private final HttpRequestFactory requestFactory;
+    private final RawResponseBodyDecoder responseBodyDecoder;
+
     /**
      * The {@link org.apache.flink.table.functions.TableFunction} we want to decorate with
      * async framework.
      */
-    private final HttpTableLookupFunction decorate;
+    private final HttpTableLookupFunctionBase decorate;
 
     /**
      * Thread pool for polling data from Http endpoint.
@@ -43,6 +46,8 @@ public class AsyncHttpTableLookupFunction extends AsyncLookupFunction {
     public void open(FunctionContext context) throws Exception {
         super.open(context);
         decorate.open(context);
+
+        this.responseBodyDecoder.open();
 
         int pullingThreadPoolSize = Integer.parseInt(
             decorate.getOptions().getProperties().getProperty(
@@ -65,7 +70,7 @@ public class AsyncHttpTableLookupFunction extends AsyncLookupFunction {
 
         publishingThreadPool =
             Executors.newFixedThreadPool(
-                publishingThreadPoolSize,
+                1,
                 new ExecutorThreadFactory(
                     "http-async-publishing-worker", ThreadUtils.LOGGING_EXCEPTION_HANDLER)
             );
@@ -73,8 +78,9 @@ public class AsyncHttpTableLookupFunction extends AsyncLookupFunction {
 
     @Override
     public CompletableFuture<Collection<RowData>> asyncLookup(RowData keyRow) {
-        CompletableFuture<Collection<RowData>> future = new CompletableFuture<>();
-        future.completeAsync(() -> decorate.lookup(keyRow), pullingThreadPool);
+        HttpLookupSourceRequestEntry request = requestFactory.buildLookupRequest(keyRow);
+        CompletableFuture<Collection<byte[]>> future = new CompletableFuture<>();
+        future.completeAsync(() -> decorate.lookup(request), pullingThreadPool);
 
         // We don't want to use ForkJoinPool at all. We are using a different thread pool
         // for publishing here intentionally to avoid thread starvation.
@@ -87,7 +93,7 @@ public class AsyncHttpTableLookupFunction extends AsyncLookupFunction {
                         new RuntimeException("Exception while processing Http Async request",
                             throwable));
                 } else {
-                    resultFuture.complete(result);
+                    resultFuture.complete(responseBodyDecoder.deserialize(result));
                 }
             },
             publishingThreadPool);

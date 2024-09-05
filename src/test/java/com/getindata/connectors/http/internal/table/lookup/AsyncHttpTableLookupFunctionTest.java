@@ -40,7 +40,7 @@ class AsyncHttpTableLookupFunctionTest {
     private final int[] rowKeys = {1, 2, 4, 12, 3};
 
     @Mock
-    private HttpTableLookupFunction decorate;
+    private HttpTableLookupFunctionBase decorate;
 
     private AsyncHttpTableLookupFunction asyncFunction;
 

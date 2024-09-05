@@ -234,7 +234,7 @@ class HttpLookupTableSourceTest {
         int[][] lookupKeys = {{1, 2}};
         LookupTableSource.LookupContext lookupContext =
                 new LookupRuntimeProviderContext(lookupKeys);
-        return tableSource.getLookupRuntimeProvider(null, null, null);
+        return tableSource.getLookupRuntimeProvider(null, null, httpRequestFactory, null);
     }
 
     private Map<String, String> getOptionsWithAsync() {
