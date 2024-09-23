@@ -3,6 +3,7 @@ package com.getindata.connectors.http;
 import java.util.Optional;
 import java.util.Properties;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.connector.base.sink.AsyncSinkBaseBuilder;
 import org.apache.flink.connector.base.sink.writer.ElementConverter;
@@ -46,6 +47,7 @@ import com.getindata.connectors.http.internal.utils.HttpHeaderUtils;
  *
  * @param <InputT> type of the elements that should be sent through HTTP request.
  */
+@Slf4j
 public class HttpSinkBuilder<InputT> extends
     AsyncSinkBaseBuilder<InputT, HttpSinkRequestEntry, HttpSinkBuilder<InputT>> {
 
@@ -90,6 +92,7 @@ public class HttpSinkBuilder<InputT> extends
         this.sinkHttpClientBuilder = DEFAULT_CLIENT_BUILDER;
         this.httpPostRequestCallback = DEFAULT_POST_REQUEST_CALLBACK;
         this.headerPreprocessor = DEFAULT_HEADER_PREPROCESSOR;
+        log.info("debug, HttpSinkBuilder init");
     }
 
     /**
@@ -97,6 +100,7 @@ public class HttpSinkBuilder<InputT> extends
      * @return {@link HttpSinkBuilder} itself
      */
     public HttpSinkBuilder<InputT> setEndpointUrl(String endpointUrl) {
+        log.info("debug, setEndpointUrl");
         this.endpointUrl = endpointUrl;
         return this;
     }
@@ -108,6 +112,7 @@ public class HttpSinkBuilder<InputT> extends
      */
     public HttpSinkBuilder<InputT> setSinkHttpClientBuilder(
         SinkHttpClientBuilder sinkHttpClientBuilder) {
+        log.info("debug, setSinkHttpClientBuilder");
         this.sinkHttpClientBuilder = sinkHttpClientBuilder;
         return this;
     }
@@ -122,6 +127,7 @@ public class HttpSinkBuilder<InputT> extends
     @PublicEvolving
     public HttpSinkBuilder<InputT> setElementConverter(
         ElementConverter<InputT, HttpSinkRequestEntry> elementConverter) {
+        log.info("debug, setElementConverter");
         this.elementConverter = elementConverter;
         return this;
     }
@@ -134,6 +140,7 @@ public class HttpSinkBuilder<InputT> extends
     @PublicEvolving
     public HttpSinkBuilder<InputT> setElementConverter(
         SchemaLifecycleAwareElementConverter<InputT, HttpSinkRequestEntry> elementConverter) {
+        log.info("debug, setElementConverter");
         this.elementConverter = elementConverter;
         return this;
     }
@@ -173,6 +180,7 @@ public class HttpSinkBuilder<InputT> extends
 
     @Override
     public HttpSink<InputT> build() {
+        log.info("debug, HttpSinkBuilder, build");
         return new HttpSink<>(
             elementConverter,
             Optional.ofNullable(getMaxBatchSize()).orElse(DEFAULT_MAX_BATCH_SIZE),

@@ -3,6 +3,8 @@ package com.getindata.connectors.http.internal.table.lookup.querycreators;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.table.data.RowData;
 
 import com.getindata.connectors.http.LookupArg;
@@ -16,6 +18,7 @@ import com.getindata.connectors.http.internal.table.lookup.LookupRow;
  * first versions of the ElasticSearch called <a href="https://www.elastic.co/guide/en/elasticsearch/guide/current/search-lite.html">Search
  * <i>Lite</i></a>).
  */
+@Slf4j
 public class ElasticSearchLiteQueryCreator implements LookupQueryCreator {
 
     private static final String ENCODED_SPACE = "%20";
@@ -37,6 +40,7 @@ public class ElasticSearchLiteQueryCreator implements LookupQueryCreator {
 
     @Override
     public LookupQueryInfo createLookupQuery(RowData lookupDataRow) {
+        log.info("debug, createLookupQuery, lookupDataRow: {}", JSON.toJSONString(lookupDataRow));
         Collection<LookupArg> lookupArgs = lookupRow.convertToLookupArgs(lookupDataRow);
 
         String luceneQuery = lookupArgs.stream()

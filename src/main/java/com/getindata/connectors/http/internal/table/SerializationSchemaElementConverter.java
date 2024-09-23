@@ -25,13 +25,14 @@ public class SerializationSchemaElementConverter
     public SerializationSchemaElementConverter(
         String insertMethod,
         SerializationSchema<RowData> serializationSchema) {
-
+        log.info("debug, SerializationSchemaElementConverter init, serializationSchema class: {}", serializationSchema.getClass());
         this.insertMethod = insertMethod;
         this.serializationSchema = serializationSchema;
     }
 
     @Override
     public void open(InitContext context) {
+        log.info("debug, SerializationSchemaElementConverter open, serializationSchema class: {}", serializationSchema.getClass());
         if (!schemaOpened) {
             try {
                 serializationSchema.open(context.asSerializationSchemaInitializationContext());

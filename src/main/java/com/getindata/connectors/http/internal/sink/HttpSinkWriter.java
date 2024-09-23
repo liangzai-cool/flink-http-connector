@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import com.alibaba.fastjson.JSON;
 import com.getindata.connectors.http.internal.SinkHttpClientResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.connector.sink2.Sink;
@@ -87,6 +88,7 @@ public class HttpSinkWriter<InputT> extends AsyncSinkWriter<InputT, HttpSinkRequ
     protected void submitRequestEntries(
             List<HttpSinkRequestEntry> requestEntries,
             Consumer<List<HttpSinkRequestEntry>> requestResult) {
+        log.info("debug, requestEntries: {}", JSON.toJSONString(requestEntries));
         CompletableFuture<SinkHttpClientResponse> future = sinkHttpClient.putRequests(requestEntries, endpointUrl);
         future.whenCompleteAsync((response, err) -> {
             if (err != null) {

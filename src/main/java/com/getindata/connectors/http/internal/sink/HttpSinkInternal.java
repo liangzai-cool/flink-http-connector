@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.connector.base.sink.AsyncSinkBase;
 import org.apache.flink.connector.base.sink.writer.BufferedRequestState;
 import org.apache.flink.connector.base.sink.writer.ElementConverter;
@@ -57,6 +58,7 @@ import com.getindata.connectors.http.internal.sink.httpclient.RequestSubmitterFa
  *
  * @param <InputT> type of the elements that should be sent through HTTP request.
  */
+@Slf4j
 public class HttpSinkInternal<InputT> extends AsyncSinkBase<InputT, HttpSinkRequestEntry> {
 
     private final String endpointUrl;
@@ -174,6 +176,7 @@ public class HttpSinkInternal<InputT> extends AsyncSinkBase<InputT, HttpSinkRequ
     @Override
     public SimpleVersionedSerializer<BufferedRequestState<HttpSinkRequestEntry>>
             getWriterStateSerializer() {
+        log.info("debug, getWriterStateSerializer");
         return new HttpSinkWriterStateSerializer();
     }
 

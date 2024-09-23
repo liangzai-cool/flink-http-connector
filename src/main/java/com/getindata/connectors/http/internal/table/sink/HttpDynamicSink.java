@@ -3,6 +3,7 @@ package com.getindata.connectors.http.internal.table.sink;
 import java.util.Properties;
 import javax.annotation.Nullable;
 
+import com.alibaba.fastjson.JSON;
 import com.getindata.connectors.http.internal.HeaderPreprocessor;
 import com.getindata.connectors.http.internal.SinkHttpClient;
 import com.getindata.connectors.http.internal.SinkHttpClientBuilder;
@@ -105,6 +106,7 @@ public class HttpDynamicSink extends AsyncDynamicTableSink<HttpSinkRequestEntry>
             maxTimeInBufferMS);
         this.consumedDataType =
             Preconditions.checkNotNull(consumedDataType, "Consumed data type must not be null");
+        log.info("debug, consumedDataTypeClass: {}, consumedDataType: {}", consumedDataType.getClass(), JSON.toJSONString(consumedDataType));
         this.encodingFormat =
             Preconditions.checkNotNull(encodingFormat, "Encoding format must not be null");
         this.httpPostRequestCallback =
@@ -138,7 +140,7 @@ public class HttpDynamicSink extends AsyncDynamicTableSink<HttpSinkRequestEntry>
                 new SerializationSchemaElementConverter(insertMethod, serializationSchema))
             .setProperties(properties);
         addAsyncOptionsToSinkBuilder(builder);
-
+        log.info("debug, serializationSchema: {}, serializationSchema: {}", serializationSchema.getClass(), JSON.toJSONString(serializationSchema));
         return SinkV2Provider.of(builder.build());
     }
 
