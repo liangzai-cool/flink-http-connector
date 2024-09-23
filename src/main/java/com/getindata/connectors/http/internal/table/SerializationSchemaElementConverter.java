@@ -10,6 +10,8 @@ import org.apache.flink.util.FlinkRuntimeException;
 import com.getindata.connectors.http.SchemaLifecycleAwareElementConverter;
 import com.getindata.connectors.http.internal.sink.HttpSinkRequestEntry;
 
+import java.nio.charset.StandardCharsets;
+
 @Slf4j
 public class SerializationSchemaElementConverter
     implements SchemaLifecycleAwareElementConverter<RowData, HttpSinkRequestEntry> {
@@ -42,8 +44,12 @@ public class SerializationSchemaElementConverter
 
     @Override
     public HttpSinkRequestEntry apply(RowData rowData, Context context) {
+        byte[] bytes = serializationSchema.serialize(rowData);
+        String data = new String(bytes, StandardCharsets.UTF_8);
+        // fix bug
+        data = data.replace("\\\\", "\\");
         return new HttpSinkRequestEntry(
             insertMethod,
-            serializationSchema.serialize(rowData));
+            data.getBytes(StandardCharsets.UTF_8));
     }
 }
